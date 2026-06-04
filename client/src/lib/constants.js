@@ -6,13 +6,26 @@ export const MILESTONE_STATUSES = [
   { value: 'cancelled', label: 'Cancelled', color: 'bg-gray-100 text-gray-500 line-through' },
 ];
 
-export const MILESTONE_CATEGORIES = [
-  'general',
-  'Entitlements & Permitting',
-  'Design & Engineering',
-  'Construction',
-  'inspection', 'financing', 'marketing', 'legal', 'closing',
+export const PHASES = [
+  { value: 'Entitlements & Permitting', color: 'bg-violet-100 text-violet-700' },
+  { value: 'Design & Engineering', color: 'bg-sky-100 text-sky-700' },
+  { value: 'Construction', color: 'bg-amber-100 text-amber-700' },
+  { value: 'general', color: 'bg-gray-100 text-gray-600' },
+  { value: 'inspection', color: 'bg-gray-100 text-gray-600' },
+  { value: 'financing', color: 'bg-gray-100 text-gray-600' },
+  { value: 'marketing', color: 'bg-gray-100 text-gray-600' },
+  { value: 'legal', color: 'bg-gray-100 text-gray-600' },
+  { value: 'closing', color: 'bg-gray-100 text-gray-600' },
 ];
+
+// Values for select dropdowns
+export const MILESTONE_CATEGORIES = PHASES.map((p) => p.value);
+
+export const PHASE_ORDER = PHASES.map((p) => p.value);
+
+export function phaseColor(phase) {
+  return PHASES.find((p) => p.value === phase)?.color || 'bg-gray-100 text-gray-600';
+}
 
 export const PROJECT_STATUSES = [
   { value: 'active', label: 'Active', color: 'bg-green-100 text-green-700' },
