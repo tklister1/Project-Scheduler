@@ -9,6 +9,6 @@
     "install:all": "cd server && npm install && cd ../client && npm install"
   },
   "engines": {
-    "node": ">=18"
+    "node": "18.x"
   }
 }
