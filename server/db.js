@@ -41,6 +41,15 @@ db.exec(`
     UNIQUE(project_id, user_id)
   );
 
+  CREATE TABLE IF NOT EXISTS project_phases (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    project_id INTEGER NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    start_date TEXT,
+    end_date TEXT,
+    sort_order INTEGER NOT NULL DEFAULT 0
+  );
+
   CREATE TABLE IF NOT EXISTS milestones (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     project_id INTEGER NOT NULL REFERENCES projects(id) ON DELETE CASCADE,

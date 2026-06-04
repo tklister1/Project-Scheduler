@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import api from '../lib/api';
 import { useAuth } from '../hooks/useAuth';
 import { PROJECT_STATUSES, MILESTONE_STATUSES, PHASE_ORDER, phaseColor, statusColor } from '../lib/constants';
-import { ArrowLeft, Plus, Pencil, Trash2, ChevronDown, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Plus, Pencil, Trash2, ChevronDown, ChevronRight, Calendar } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import MilestoneModal from '../components/MilestoneModal';
 import GanttChart from '../components/GanttChart';
@@ -14,18 +14,21 @@ export default function ProjectDetailPage() {
   const { user } = useAuth();
   const [project, setProject] = useState(null);
   const [milestones, setMilestones] = useState([]);
+  const [phases, setPhases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState('milestones');
   const [showMilestoneModal, setShowMilestoneModal] = useState(false);
   const [editingMilestone, setEditingMilestone] = useState(null);
 
   async function load() {
-    const [pRes, mRes] = await Promise.all([
+    const [pRes, mRes, phRes] = await Promise.all([
       api.get(`/projects/${id}`),
       api.get(`/projects/${id}/milestones`),
+      api.get(`/projects/${id}/phases`),
     ]);
     setProject(pRes.data);
     setMilestones(mRes.data);
+    setPhases(phRes.data);
     setLoading(false);
   }
 
@@ -34,6 +37,11 @@ export default function ProjectDetailPage() {
   async function deleteMilestone(mid) {
     if (!confirm('Delete this milestone?')) return;
     await api.delete(`/projects/${id}/milestones/${mid}`);
+    load();
+  }
+
+  async function updatePhase(phaseId, start_date, end_date) {
+    await api.put(`/projects/${id}/phases/${phaseId}`, { start_date, end_date });
     load();
   }
 
@@ -89,13 +97,15 @@ export default function ProjectDetailPage() {
       {tab === 'milestones' && (
         <MilestoneList
           milestones={milestones}
+          phases={phases}
           canEdit={canEdit}
           onEdit={(m) => { setEditingMilestone(m); setShowMilestoneModal(true); }}
           onDelete={deleteMilestone}
+          onUpdatePhase={updatePhase}
         />
       )}
 
-      {tab === 'gantt' && <GanttChart milestones={milestones} project={project} />}
+      {tab === 'gantt' && <GanttChart milestones={milestones} phases={phases} project={project} />}
 
       {tab === 'access' && canEdit && <AccessPanel projectId={id} onRefresh={load} />}
 
@@ -111,7 +121,50 @@ export default function ProjectDetailPage() {
   );
 }
 
-function MilestoneList({ milestones, canEdit, onEdit, onDelete }) {
+function PhaseDateEditor({ phase, canEdit, onSave }) {
+  const [editing, setEditing] = useState(false);
+  const [start, setStart] = useState(phase.start_date || '');
+  const [end, setEnd] = useState(phase.end_date || '');
+
+  function handleSave() {
+    onSave(phase.id, start, end);
+    setEditing(false);
+  }
+
+  if (!editing) {
+    return (
+      <div className="flex items-center gap-2 text-xs text-gray-400">
+        <Calendar size={12} />
+        {phase.start_date || phase.end_date ? (
+          <span>
+            {phase.start_date ? format(parseISO(phase.start_date), 'MMM d, yyyy') : '?'}
+            {' → '}
+            {phase.end_date ? format(parseISO(phase.end_date), 'MMM d, yyyy') : '?'}
+          </span>
+        ) : (
+          <span>No dates set</span>
+        )}
+        {canEdit && (
+          <button onClick={() => setEditing(true)} className="ml-1 text-gray-400 hover:text-brand-600">
+            <Pencil size={11} />
+          </button>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+      <input type="date" className="input py-0.5 px-2 text-xs w-36" value={start} onChange={(e) => setStart(e.target.value)} />
+      <span className="text-gray-400 text-xs">→</span>
+      <input type="date" className="input py-0.5 px-2 text-xs w-36" value={end} onChange={(e) => setEnd(e.target.value)} />
+      <button onClick={handleSave} className="btn-primary py-0.5 px-2 text-xs">Save</button>
+      <button onClick={() => setEditing(false)} className="btn-secondary py-0.5 px-2 text-xs">Cancel</button>
+    </div>
+  );
+}
+
+function MilestoneList({ milestones, phases, canEdit, onEdit, onDelete, onUpdatePhase }) {
   const [statusFilter, setStatusFilter] = useState('');
   const [collapsed, setCollapsed] = useState({});
 
@@ -121,7 +174,9 @@ function MilestoneList({ milestones, canEdit, onEdit, onDelete }) {
 
   const filtered = statusFilter ? milestones.filter((m) => m.status === statusFilter) : milestones;
 
-  // Group by phase in defined order, then any unknown phases at the end
+  // Build phase map by name for date lookup
+  const phaseByName = Object.fromEntries(phases.map((p) => [p.name, p]));
+
   const phaseGroups = PHASE_ORDER
     .map((phase) => ({ phase, items: filtered.filter((m) => m.category === phase) }))
     .filter((g) => g.items.length > 0);
@@ -147,22 +202,28 @@ function MilestoneList({ milestones, canEdit, onEdit, onDelete }) {
         const isCollapsed = collapsed[phase];
         const completedCount = items.filter((m) => m.status === 'complete').length;
         const phaseBadge = phaseColor(phase);
+        const phaseRecord = phaseByName[phase];
 
         return (
           <div key={phase} className="card overflow-hidden">
-            {/* Phase header */}
             <button
               onClick={() => togglePhase(phase)}
               className="w-full flex items-center justify-between px-5 py-3 bg-gray-50 hover:bg-gray-100 transition-colors border-b border-gray-200"
             >
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 flex-wrap">
                 {isCollapsed ? <ChevronRight size={16} className="text-gray-400" /> : <ChevronDown size={16} className="text-gray-400" />}
                 <span className={`badge ${phaseBadge}`}>{phase}</span>
                 <span className="text-xs text-gray-400">{completedCount}/{items.length} complete</span>
+                {phaseRecord && (
+                  <PhaseDateEditor
+                    phase={phaseRecord}
+                    canEdit={canEdit}
+                    onSave={onUpdatePhase}
+                  />
+                )}
               </div>
             </button>
 
-            {/* Milestone rows */}
             {!isCollapsed && (
               <table className="w-full text-sm">
                 <thead className="bg-white border-b border-gray-100">

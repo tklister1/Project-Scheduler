@@ -56,10 +56,18 @@ router.post('/', requireAuth, requireAdmin, (req, res) => {
     VALUES (?, ?, ?, ?, ?, ?)
   `).run(name, description || null, status || 'active', start_date || null, end_date || null, req.user.id);
 
-  // Grant admin access to creator
-  db.prepare('INSERT OR IGNORE INTO project_access (project_id, user_id, role) VALUES (?, ?, ?)').run(result.lastInsertRowid, req.user.id, 'admin');
+  const projectId = result.lastInsertRowid;
 
-  res.status(201).json({ id: result.lastInsertRowid, name, description, status: status || 'active' });
+  // Grant admin access to creator
+  db.prepare('INSERT OR IGNORE INTO project_access (project_id, user_id, role) VALUES (?, ?, ?)').run(projectId, req.user.id, 'admin');
+
+  // Seed default phases
+  const defaultPhases = ['Entitlements & Permitting', 'Design & Engineering', 'Construction'];
+  defaultPhases.forEach((phaseName, i) => {
+    db.prepare('INSERT INTO project_phases (project_id, name, sort_order) VALUES (?, ?, ?)').run(projectId, phaseName, i);
+  });
+
+  res.status(201).json({ id: projectId, name, description, status: status || 'active' });
 });
 
 // Update project
@@ -99,6 +107,20 @@ router.post('/:projectId/access', requireAuth, requireProjectAccess('admin'), (r
 router.delete('/:projectId/access/:userId', requireAuth, requireProjectAccess('admin'), (req, res) => {
   db.prepare('DELETE FROM project_access WHERE project_id = ? AND user_id = ?').run(req.params.projectId, req.params.userId);
   res.json({ success: true });
+});
+
+// Phase routes
+router.get('/:projectId/phases', requireAuth, requireProjectAccess('viewer'), (req, res) => {
+  const phases = db.prepare('SELECT * FROM project_phases WHERE project_id = ? ORDER BY sort_order, name').all(req.params.projectId);
+  res.json(phases);
+});
+
+router.put('/:projectId/phases/:id', requireAuth, requireProjectAccess('admin'), (req, res) => {
+  const { start_date, end_date } = req.body;
+  db.prepare('UPDATE project_phases SET start_date = ?, end_date = ? WHERE id = ? AND project_id = ?')
+    .run(start_date || null, end_date || null, req.params.id, req.params.projectId);
+  const phase = db.prepare('SELECT * FROM project_phases WHERE id = ?').get(req.params.id);
+  res.json(phase);
 });
 
 module.exports = router;
