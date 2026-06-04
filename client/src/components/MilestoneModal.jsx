@@ -8,7 +8,6 @@ export default function MilestoneModal({ projectId, milestone, onClose, onSaved 
     name: milestone?.name || '',
     category: milestone?.category || 'general',
     status: milestone?.status || 'pending',
-    start_date: milestone?.start_date || '',
     due_date: milestone?.due_date || '',
     completed_date: milestone?.completed_date || '',
     notes: milestone?.notes || '',
@@ -24,8 +23,7 @@ export default function MilestoneModal({ projectId, milestone, onClose, onSaved 
     setSaving(true);
     setError('');
     try {
-      const payload = { ...form };
-      if (!payload.start_date) payload.start_date = null;
+      const payload = { ...form, start_date: null };
       if (!payload.due_date) payload.due_date = null;
       if (!payload.completed_date) payload.completed_date = null;
 
@@ -74,18 +72,13 @@ export default function MilestoneModal({ projectId, milestone, onClose, onSaved 
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-              <input type="date" className="input" value={form.start_date} onChange={(e) => set('start_date', e.target.value)} />
-            </div>
-            <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
               <input type="date" className="input" value={form.due_date} onChange={(e) => set('due_date', e.target.value)} />
             </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Completed Date</label>
-            <input type="date" className="input" value={form.completed_date} onChange={(e) => set('completed_date', e.target.value)} />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Completed Date</label>
+              <input type="date" className="input" value={form.completed_date} onChange={(e) => set('completed_date', e.target.value)} />
+            </div>
           </div>
 
           <div>

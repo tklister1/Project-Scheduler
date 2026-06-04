@@ -146,7 +146,6 @@ function MilestoneList({ milestones, canEdit, onEdit, onDelete }) {
               <th className="text-left px-4 py-3 font-medium text-gray-600">Milestone</th>
               <th className="text-left px-4 py-3 font-medium text-gray-600">Category</th>
               <th className="text-left px-4 py-3 font-medium text-gray-600">Status</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Start</th>
               <th className="text-left px-4 py-3 font-medium text-gray-600">Due</th>
               <th className="text-left px-4 py-3 font-medium text-gray-600">Completed</th>
               <th className="px-4 py-3" />
@@ -166,9 +165,6 @@ function MilestoneList({ milestones, canEdit, onEdit, onDelete }) {
                   <span className={`badge ${statusColor(MILESTONE_STATUSES, m.status)}`}>
                     {m.status.replace('_', ' ')}
                   </span>
-                </td>
-                <td className="px-4 py-3 text-gray-500">
-                  {m.start_date ? format(parseISO(m.start_date), 'MMM d, yy') : '—'}
                 </td>
                 <td className="px-4 py-3 text-gray-500">
                   {m.due_date ? format(parseISO(m.due_date), 'MMM d, yy') : '—'}
@@ -191,7 +187,7 @@ function MilestoneList({ milestones, canEdit, onEdit, onDelete }) {
               </tr>
             ))}
             {filtered.length === 0 && (
-              <tr><td colSpan={7} className="text-center py-10 text-gray-400">No milestones found.</td></tr>
+              <tr><td colSpan={6} className="text-center py-10 text-gray-400">No milestones found.</td></tr>
             )}
           </tbody>
         </table>

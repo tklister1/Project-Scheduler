@@ -7,8 +7,11 @@ export const MILESTONE_STATUSES = [
 ];
 
 export const MILESTONE_CATEGORIES = [
-  'general', 'design', 'permitting', 'construction', 'inspection',
-  'financing', 'marketing', 'legal', 'closing',
+  'general',
+  'Entitlements & Permitting',
+  'Design & Engineering',
+  'Construction',
+  'inspection', 'financing', 'marketing', 'legal', 'closing',
 ];
 
 export const PROJECT_STATUSES = [
