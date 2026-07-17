@@ -150,7 +150,10 @@ export default function DashboardPage() {
                   const statusCls = statusColor(PROJECT_STATUSES, p.status);
                   return (
                     <Link key={p.id} to={`/projects/${p.id}`} className="card px-5 py-4 hover:shadow-md transition-shadow group flex items-center justify-between">
-                      <h3 className="font-semibold text-gray-900 group-hover:text-brand-600 transition-colors leading-tight">{p.name}</h3>
+                      <div>
+                        <h3 className="font-semibold text-gray-900 group-hover:text-brand-600 transition-colors leading-tight">{p.name}</h3>
+                        {p.start_date && <p className="text-xs text-gray-400 mt-0.5">Start: {format(parseISO(p.start_date), 'MMM d, yyyy')}</p>}
+                      </div>
                       <span className={`badge ml-4 shrink-0 ${statusCls}`}>{p.status.replace(/_/g, ' ')}</span>
                     </Link>
                   );
