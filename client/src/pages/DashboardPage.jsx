@@ -147,30 +147,11 @@ export default function DashboardPage() {
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Active Projects</h2>
               <div className="grid gap-4 grid-cols-1">
                 {projects.filter((p) => p.status !== 'stabilized').map((p) => {
-                  const pct = p.milestone_count > 0 ? Math.round((p.completed_milestones / p.milestone_count) * 100) : 0;
                   const statusCls = statusColor(PROJECT_STATUSES, p.status);
                   return (
-                    <Link key={p.id} to={`/projects/${p.id}`} className="card p-5 hover:shadow-md transition-shadow group">
-                      <div className="flex items-start justify-between mb-3">
-                        <h3 className="font-semibold text-gray-900 group-hover:text-brand-600 transition-colors leading-tight">{p.name}</h3>
-                        <span className={`badge ml-2 shrink-0 ${statusCls}`}>{p.status.replace('_', ' ')}</span>
-                      </div>
-                      {p.description && <p className="text-sm text-gray-500 mb-3 line-clamp-2">{p.description}</p>}
-                      <div className="mt-auto">
-                        <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
-                          <span>{p.completed_milestones}/{p.milestone_count} key dates</span>
-                          <span>{pct}%</span>
-                        </div>
-                        <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                          <div className="h-full bg-brand-500 rounded-full transition-all" style={{ width: `${pct}%` }} />
-                        </div>
-                        {(p.start_date || p.end_date) && (
-                          <div className="flex gap-3 mt-3 text-xs text-gray-400">
-                            {p.start_date && <span>Start: {format(parseISO(p.start_date), 'MMM d, yyyy')}</span>}
-                            {p.end_date && <span>End: {format(parseISO(p.end_date), 'MMM d, yyyy')}</span>}
-                          </div>
-                        )}
-                      </div>
+                    <Link key={p.id} to={`/projects/${p.id}`} className="card px-5 py-4 hover:shadow-md transition-shadow group flex items-center justify-between">
+                      <h3 className="font-semibold text-gray-900 group-hover:text-brand-600 transition-colors leading-tight">{p.name}</h3>
+                      <span className={`badge ml-4 shrink-0 ${statusCls}`}>{p.status.replace(/_/g, ' ')}</span>
                     </Link>
                   );
                 })}
