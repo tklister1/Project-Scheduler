@@ -73,6 +73,7 @@ export default function ProjectListPage() {
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Project</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-600">Project Type</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Status</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Key Tasks</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Start</th>
@@ -88,6 +89,9 @@ export default function ProjectListPage() {
                     <td className="px-4 py-3">
                       <Link to={`/projects/${p.id}`} className="font-medium text-brand-600 hover:underline">{p.name}</Link>
                       {p.description && <p className="text-gray-400 text-xs mt-0.5 truncate max-w-xs">{p.description}</p>}
+                    </td>
+                    <td className="px-4 py-3 text-gray-600">
+                      {p.project_type || '—'}
                     </td>
                     <td className="px-4 py-3">
                       <span className={`badge ${statusColor(PROJECT_STATUSES, p.status)}`}>
@@ -125,7 +129,7 @@ export default function ProjectListPage() {
               })}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="text-center py-12 text-gray-400">
+                  <td colSpan={7} className="text-center py-12 text-gray-400">
                     <FolderKanban size={32} className="mx-auto mb-2 opacity-40" />
                     No projects match your filters.
                   </td>
