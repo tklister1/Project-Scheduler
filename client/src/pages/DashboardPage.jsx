@@ -145,7 +145,7 @@ export default function DashboardPage() {
             {/* Projects */}
             <div className="xl:col-span-2">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Active Projects</h2>
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-4 grid-cols-1">
                 {projects.filter((p) => p.status === 'active').map((p) => {
                   const pct = p.milestone_count > 0 ? Math.round((p.completed_milestones / p.milestone_count) * 100) : 0;
                   const statusCls = statusColor(PROJECT_STATUSES, p.status);
