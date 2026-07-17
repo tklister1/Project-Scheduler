@@ -59,8 +59,8 @@ export default function GanttChart({ milestones, phases = [] }) {
 
   const knownPhases = new Set(PHASE_ORDER);
   const phaseGroups = PHASE_ORDER
-    .map((phase) => ({ phase, items: datedMilestones.filter((m) => m.category === phase) }))
-    .filter((g) => g.items.length > 0 || (phaseByName[phase]?.start_date || phaseByName[phase]?.end_date));
+    .map((phaseName) => ({ phase: phaseName, items: datedMilestones.filter((m) => m.category === phaseName) }))
+    .filter((g) => g.items.length > 0 || (phaseByName[g.phase]?.start_date || phaseByName[g.phase]?.end_date));
 
   const otherItems = datedMilestones.filter((m) => !knownPhases.has(m.category));
   if (otherItems.length > 0) phaseGroups.push({ phase: 'Other', items: otherItems });
