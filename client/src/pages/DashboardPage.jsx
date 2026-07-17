@@ -76,7 +76,7 @@ export default function DashboardPage() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             <StatCard label="Total Projects" value={projects.length} icon={FolderKanban} color="bg-brand-600" />
             <StatCard label="Active Projects" value={active} icon={Clock} color="bg-green-500" />
-            <StatCard label="Total Milestones" value={totalMilestones} icon={AlertCircle} color="bg-purple-500" />
+            <StatCard label="Total Key Dates" value={totalMilestones} icon={AlertCircle} color="bg-purple-500" />
             <StatCard label="Completed" value={completedMilestones} icon={CheckCircle2} color="bg-emerald-500" />
           </div>
 
@@ -158,7 +158,7 @@ export default function DashboardPage() {
                       {p.description && <p className="text-sm text-gray-500 mb-3 line-clamp-2">{p.description}</p>}
                       <div className="mt-auto">
                         <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
-                          <span>{p.completed_milestones}/{p.milestone_count} milestones</span>
+                          <span>{p.completed_milestones}/{p.milestone_count} key dates</span>
                           <span>{pct}%</span>
                         </div>
                         <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
