@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import api from '../lib/api';
-import { PROJECT_STATUSES } from '../lib/constants';
+import { PROJECT_STATUSES, PROJECT_TYPES } from '../lib/constants';
 import { X } from 'lucide-react';
 
 export default function ProjectModal({ project, onClose, onSaved }) {
@@ -8,6 +8,7 @@ export default function ProjectModal({ project, onClose, onSaved }) {
     name: project?.name || '',
     description: project?.description || '',
     status: project?.status || 'pre_development',
+    project_type: project?.project_type || '',
     start_date: project?.start_date || '',
     end_date: project?.end_date || '',
   });
@@ -56,6 +57,13 @@ export default function ProjectModal({ project, onClose, onSaved }) {
             <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
             <select className="input" value={form.status} onChange={(e) => set('status', e.target.value)}>
               {PROJECT_STATUSES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Project Type</label>
+            <select className="input" value={form.project_type} onChange={(e) => set('project_type', e.target.value)}>
+              <option value="">— Select type —</option>
+              {PROJECT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
             </select>
           </div>
           <div>

@@ -47,13 +47,13 @@ router.get('/:id', requireAuth, requireProjectAccess('viewer'), async (req, res)
 
 router.post('/', requireAuth, requireAdmin, async (req, res) => {
   try {
-    const { name, description, status, start_date } = req.body;
+    const { name, description, status, project_type, start_date } = req.body;
     if (!name) return res.status(400).json({ error: 'name required' });
 
     const { rows: [project] } = await query(`
-      INSERT INTO projects (name, description, status, start_date, created_by)
-      VALUES ($1, $2, $3, $4, $5) RETURNING id
-    `, [name, description || null, status || 'pre_development', start_date || null, req.user.id]);
+      INSERT INTO projects (name, description, status, project_type, start_date, created_by)
+      VALUES ($1, $2, $3, $4, $5, $6) RETURNING id
+    `, [name, description || null, status || 'pre_development', project_type || null, start_date || null, req.user.id]);
 
     const projectId = project.id;
 
@@ -70,16 +70,17 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
 
 router.put('/:id', requireAuth, requireProjectAccess('admin'), async (req, res) => {
   try {
-    const { name, description, status, start_date } = req.body;
+    const { name, description, status, project_type, start_date } = req.body;
     await query(`
       UPDATE projects SET
         name = COALESCE($1, name),
         description = COALESCE($2, description),
         status = COALESCE($3, status),
-        start_date = COALESCE($4, start_date),
+        project_type = COALESCE($4, project_type),
+        start_date = COALESCE($5, start_date),
         updated_at = NOW()
-      WHERE id = $5
-    `, [name || null, description !== undefined ? description : null, status || null, start_date !== undefined ? start_date : null, req.params.id]);
+      WHERE id = $6
+    `, [name || null, description !== undefined ? description : null, status || null, project_type || null, start_date !== undefined ? start_date : null, req.params.id]);
     res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });

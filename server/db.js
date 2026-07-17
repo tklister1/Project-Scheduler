@@ -41,12 +41,17 @@ async function initDb() {
       name TEXT NOT NULL,
       description TEXT,
       status TEXT NOT NULL DEFAULT 'pre_development',
+      project_type TEXT,
       start_date TEXT,
       end_date TEXT,
       created_by INTEGER REFERENCES users(id),
       created_at TIMESTAMP NOT NULL DEFAULT NOW(),
       updated_at TIMESTAMP NOT NULL DEFAULT NOW()
     )
+  `);
+
+  await query(`
+    ALTER TABLE projects ADD COLUMN IF NOT EXISTS project_type TEXT
   `);
 
   await query(`
