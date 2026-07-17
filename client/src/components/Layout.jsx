@@ -23,7 +23,7 @@ export default function Layout() {
       <aside className="w-60 bg-brand-900 flex flex-col shrink-0">
         <div className="px-5 py-5 flex items-center gap-2 border-b border-brand-700">
           <Building2 size={22} className="text-brand-100" />
-          <span className="text-white font-semibold text-base leading-tight">Project Scheduler</span>
+          <span className="text-white font-semibold text-base leading-tight">ProjeX</span>
         </div>
 
         <nav className="flex-1 px-3 py-4 space-y-1">

@@ -32,7 +32,7 @@ export default function LoginPage() {
           <div className="w-14 h-14 bg-brand-600 rounded-2xl flex items-center justify-center mb-4">
             <Building2 size={28} className="text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-white">Project Scheduler</h1>
+          <h1 className="text-2xl font-bold text-white">ProjeX</h1>
           <p className="text-brand-200 text-sm mt-1">Real Estate Development</p>
         </div>
 
