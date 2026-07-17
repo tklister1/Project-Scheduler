@@ -144,9 +144,9 @@ export default function DashboardPage() {
 
             {/* Projects */}
             <div className="xl:col-span-2">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Projects</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Active Projects</h2>
               <div className="grid gap-4 sm:grid-cols-2">
-                {projects.map((p) => {
+                {projects.filter((p) => p.status === 'active').map((p) => {
                   const pct = p.milestone_count > 0 ? Math.round((p.completed_milestones / p.milestone_count) * 100) : 0;
                   const statusCls = statusColor(PROJECT_STATUSES, p.status);
                   return (
@@ -174,10 +174,10 @@ export default function DashboardPage() {
                     </Link>
                   );
                 })}
-                {projects.length === 0 && (
+                {projects.filter((p) => p.status === 'active').length === 0 && (
                   <div className="sm:col-span-2 text-center py-16 text-gray-400">
                     <FolderKanban size={40} className="mx-auto mb-3 opacity-40" />
-                    <p>No projects yet.</p>
+                    <p>No active projects.</p>
                   </div>
                 )}
               </div>
