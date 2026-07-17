@@ -2,8 +2,6 @@ export const MILESTONE_STATUSES = [
   { value: 'pending', label: 'Pending', color: 'bg-gray-100 text-gray-700' },
   { value: 'in_progress', label: 'In Progress', color: 'bg-blue-100 text-blue-700' },
   { value: 'complete', label: 'Complete', color: 'bg-green-100 text-green-700' },
-  { value: 'blocked', label: 'Blocked', color: 'bg-red-100 text-red-700' },
-  { value: 'cancelled', label: 'Cancelled', color: 'bg-gray-100 text-gray-500 line-through' },
 ];
 
 export const PHASES = [
