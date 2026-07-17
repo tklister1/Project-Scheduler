@@ -52,7 +52,7 @@ export default function GanttChart({ milestones, phases = [] }) {
     return (
       <div className="card p-12 text-center text-gray-400">
         <p>No dates to display yet.</p>
-        <p className="text-sm mt-1">Add due dates to milestones or set phase date ranges to see the Gantt chart.</p>
+        <p className="text-sm mt-1">Add due dates to key tasks or set phase date ranges to see the Gantt chart.</p>
       </div>
     );
   }
@@ -89,7 +89,7 @@ export default function GanttChart({ milestones, phases = [] }) {
       <div style={{ minWidth: '700px' }}>
         {/* Month headers */}
         <div className="flex border-b border-gray-200 bg-gray-50 sticky top-0 z-20">
-          <div className="w-56 shrink-0 px-4 py-2 text-xs font-medium text-gray-500 border-r border-gray-200">Milestone</div>
+          <div className="w-56 shrink-0 px-4 py-2 text-xs font-medium text-gray-500 border-r border-gray-200">Key Task</div>
           <div className="flex-1 flex">
             {months.map((m) => (
               <div

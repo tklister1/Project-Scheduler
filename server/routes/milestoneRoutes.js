@@ -5,7 +5,7 @@ const { requireAuth, requireProjectAccess } = require('../auth');
 // List milestones for a project
 router.get('/', requireAuth, requireProjectAccess('viewer'), (req, res) => {
   const milestones = db.prepare(`
-    SELECT * FROM milestones WHERE project_id = ? ORDER BY sort_order, due_date, name
+    SELECT * FROM milestones WHERE project_id = ? ORDER BY due_date, name
   `).all(req.params.projectId);
   res.json(milestones);
 });

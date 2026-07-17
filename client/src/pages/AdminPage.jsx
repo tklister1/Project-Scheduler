@@ -25,7 +25,7 @@ export default function AdminPage() {
   }
 
   async function deleteProject(id) {
-    if (!confirm('Delete this project and all milestones?')) return;
+    if (!confirm('Delete this project and all key tasks?')) return;
     await api.delete(`/projects/${id}`);
     load();
   }
@@ -106,7 +106,7 @@ export default function AdminPage() {
               <tr>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Project</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Status</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Milestones</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-600">Key Tasks</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Created By</th>
                 <th className="px-4 py-3" />
               </tr>

@@ -11,7 +11,6 @@ export default function MilestoneModal({ projectId, milestone, onClose, onSaved 
     due_date: milestone?.due_date || '',
     completed_date: milestone?.completed_date || '',
     notes: milestone?.notes || '',
-    sort_order: milestone?.sort_order ?? 0,
   });
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
@@ -23,7 +22,7 @@ export default function MilestoneModal({ projectId, milestone, onClose, onSaved 
     setSaving(true);
     setError('');
     try {
-      const payload = { ...form, start_date: null };
+      const payload = { ...form, start_date: null, sort_order: 0 };
       if (!payload.due_date) payload.due_date = null;
       if (!payload.completed_date) payload.completed_date = null;
 
@@ -44,7 +43,7 @@ export default function MilestoneModal({ projectId, milestone, onClose, onSaved 
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white">
-          <h2 className="font-semibold text-gray-900">{milestone ? 'Edit Milestone' : 'New Milestone'}</h2>
+          <h2 className="font-semibold text-gray-900">{milestone ? 'Edit Key Task' : 'New Key Task'}</h2>
           <button onClick={onClose} className="p-1 rounded hover:bg-gray-100"><X size={18} /></button>
         </div>
         <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
@@ -57,7 +56,7 @@ export default function MilestoneModal({ projectId, milestone, onClose, onSaved 
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Phase</label>
               <select className="input" value={form.category} onChange={(e) => set('category', e.target.value)}>
                 {MILESTONE_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
@@ -86,15 +85,10 @@ export default function MilestoneModal({ projectId, milestone, onClose, onSaved 
             <textarea className="input resize-none" rows={3} value={form.notes} onChange={(e) => set('notes', e.target.value)} placeholder="Optional notes…" />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Sort Order</label>
-            <input type="number" className="input" value={form.sort_order} onChange={(e) => set('sort_order', parseInt(e.target.value) || 0)} />
-          </div>
-
           <div className="flex gap-3 pt-2">
             <button type="button" onClick={onClose} className="btn-secondary flex-1 justify-center">Cancel</button>
             <button type="submit" className="btn-primary flex-1 justify-center" disabled={saving}>
-              {saving ? 'Saving…' : milestone ? 'Save Changes' : 'Create Milestone'}
+              {saving ? 'Saving…' : milestone ? 'Save Changes' : 'Create Key Task'}
             </button>
           </div>
         </form>

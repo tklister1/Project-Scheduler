@@ -35,7 +35,7 @@ export default function ProjectDetailPage() {
   useEffect(() => { load(); }, [id]);
 
   async function deleteMilestone(mid) {
-    if (!confirm('Delete this milestone?')) return;
+    if (!confirm('Delete this key task?')) return;
     await api.delete(`/projects/${id}/milestones/${mid}`);
     load();
   }
@@ -51,7 +51,7 @@ export default function ProjectDetailPage() {
   if (!project) return <div className="p-8 text-gray-500">Project not found.</div>;
 
   const tabs = [
-    { key: 'milestones', label: 'Milestones' },
+    { key: 'milestones', label: 'Key Tasks' },
     { key: 'gantt', label: 'Gantt Chart' },
     ...(canEdit ? [{ key: 'access', label: 'Access' }] : []),
   ];
@@ -74,7 +74,7 @@ export default function ProjectDetailPage() {
           </div>
           {canEdit && (
             <button onClick={() => { setEditingMilestone(null); setShowMilestoneModal(true); }} className="btn-primary">
-              <Plus size={16} /> Add Milestone
+              <Plus size={16} /> Add Key Task
             </button>
           )}
         </div>
@@ -195,7 +195,7 @@ function MilestoneList({ milestones, phases, canEdit, onEdit, onDelete, onUpdate
       </div>
 
       {phaseGroups.length === 0 && (
-        <div className="card p-10 text-center text-gray-400">No milestones found.</div>
+        <div className="card p-10 text-center text-gray-400">No key tasks found.</div>
       )}
 
       {phaseGroups.map(({ phase, items }) => {
@@ -228,7 +228,7 @@ function MilestoneList({ milestones, phases, canEdit, onEdit, onDelete, onUpdate
               <table className="w-full text-sm">
                 <thead className="bg-white border-b border-gray-100">
                   <tr>
-                    <th className="text-left px-5 py-2 font-medium text-gray-500 text-xs">Milestone</th>
+                    <th className="text-left px-5 py-2 font-medium text-gray-500 text-xs">Key Task</th>
                     <th className="text-left px-4 py-2 font-medium text-gray-500 text-xs">Status</th>
                     <th className="text-left px-4 py-2 font-medium text-gray-500 text-xs">Due</th>
                     <th className="text-left px-4 py-2 font-medium text-gray-500 text-xs">Completed</th>

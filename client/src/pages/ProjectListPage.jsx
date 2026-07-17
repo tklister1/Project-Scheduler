@@ -23,7 +23,7 @@ export default function ProjectListPage() {
   useEffect(() => { load(); }, []);
 
   async function handleDelete(id) {
-    if (!confirm('Delete this project and all its milestones?')) return;
+    if (!confirm('Delete this project and all its key tasks?')) return;
     await api.delete(`/projects/${id}`);
     load();
   }
@@ -74,7 +74,7 @@ export default function ProjectListPage() {
               <tr>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Project</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Status</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Milestones</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-600">Key Tasks</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Start</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">End</th>
                 <th className="px-4 py-3" />
