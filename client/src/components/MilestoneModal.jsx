@@ -6,7 +6,7 @@ import { X } from 'lucide-react';
 export default function MilestoneModal({ projectId, milestone, onClose, onSaved }) {
   const [form, setForm] = useState({
     name: milestone?.name || '',
-    category: milestone?.category || 'general',
+    category: milestone?.category || 'Entitlements & Permitting',
     status: milestone?.status || 'pending',
     due_date: milestone?.due_date || '',
     completed_date: milestone?.completed_date || '',
