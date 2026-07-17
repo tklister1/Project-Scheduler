@@ -13,10 +13,12 @@ const STATUS_COLORS = {
 const PHASE_COLORS = {
   'Entitlements & Permitting': { bar: '#ede9fe', border: '#a78bfa', text: '#7c3aed' },
   'Design & Engineering':      { bar: '#e0f2fe', border: '#38bdf8', text: '#0369a1' },
-  'Construction':               { bar: '#fef3c7', border: '#fbbf24', text: '#b45309' },
+  'Construction':              { bar: '#fef3c7', border: '#fbbf24', text: '#b45309' },
 };
 
-export default function GanttChart({ milestones, phases = [] }) {
+const DEFAULT_COLORS = { bar: '#f3f4f6', border: '#9ca3af', text: '#6b7280' };
+
+export default function GanttChart({ milestones = [], phases = [] }) {
   const datedMilestones = milestones.filter((m) => m.due_date);
   const phaseByName = Object.fromEntries(phases.map((p) => [p.name, p]));
 
@@ -24,25 +26,25 @@ export default function GanttChart({ milestones, phases = [] }) {
     const now = new Date();
     const allDates = [
       ...datedMilestones.map((m) => parseISO(m.due_date)),
-      ...phases.flatMap((p) => [p.start_date && parseISO(p.start_date), p.end_date && parseISO(p.end_date)].filter(Boolean)),
+      ...phases.flatMap((p) => [
+        p.start_date ? parseISO(p.start_date) : null,
+        p.end_date ? parseISO(p.end_date) : null,
+      ].filter(Boolean)),
     ];
 
-    if (allDates.length === 0) {
-      const start = subMonths(startOfMonth(now), 1);
-      const end = addMonths(endOfMonth(now), 4);
-      return { months: eachMonthOfInterval({ start, end }), rangeStart: start, totalDays: differenceInDays(end, start) };
-    }
+    const start = allDates.length > 0
+      ? startOfMonth(subMonths(new Date(Math.min(...allDates)), 1))
+      : subMonths(startOfMonth(now), 1);
+    const end = allDates.length > 0
+      ? endOfMonth(addMonths(new Date(Math.max(...allDates)), 1))
+      : addMonths(endOfMonth(now), 4);
 
-    const minDate = new Date(Math.min(...allDates));
-    const maxDate = new Date(Math.max(...allDates));
-    const rangeStart = startOfMonth(subMonths(minDate, 1));
-    const rangeEnd = endOfMonth(addMonths(maxDate, 1));
     return {
-      months: eachMonthOfInterval({ start: rangeStart, end: rangeEnd }),
-      rangeStart,
-      totalDays: differenceInDays(rangeEnd, rangeStart) + 1,
+      months: eachMonthOfInterval({ start, end }),
+      rangeStart: start,
+      totalDays: differenceInDays(end, start) + 1,
     };
-  }, [datedMilestones, phases]);
+  }, [datedMilestones.length, phases]);
 
   function pct(date) {
     return (differenceInDays(date, rangeStart) / totalDays) * 100;
@@ -57,39 +59,27 @@ export default function GanttChart({ milestones, phases = [] }) {
     );
   }
 
-  const knownPhases = new Set(PHASE_ORDER);
-  const phaseGroups = PHASE_ORDER
-    .map((phaseName) => ({ phase: phaseName, items: datedMilestones.filter((m) => m.category === phaseName) }))
-    .filter((g) => g.items.length > 0 || (phaseByName[g.phase]?.start_date || phaseByName[g.phase]?.end_date));
+  const knownPhaseSet = new Set(PHASE_ORDER);
 
-  const otherItems = datedMilestones.filter((m) => !knownPhases.has(m.category));
-  if (otherItems.length > 0) phaseGroups.push({ phase: 'Other', items: otherItems });
+  const phaseGroups = [
+    ...PHASE_ORDER
+      .map((name) => ({ name, items: datedMilestones.filter((m) => m.category === name) }))
+      .filter((g) => g.items.length > 0 || phaseByName[g.name]?.start_date || phaseByName[g.name]?.end_date),
+    ...(datedMilestones.filter((m) => !knownPhaseSet.has(m.category)).length > 0
+      ? [{ name: 'Other', items: datedMilestones.filter((m) => !knownPhaseSet.has(m.category)) }]
+      : []),
+  ];
 
-  function MonthGridLines() {
-    return months.map((mon) => (
-      <div
-        key={mon.toISOString()}
-        className="absolute top-0 bottom-0 border-r border-gray-100"
-        style={{ left: `${pct(endOfMonth(mon))}%` }}
-      />
-    ));
-  }
-
-  function TodayLine() {
-    return (
-      <div
-        className="absolute top-0 bottom-0 w-px bg-red-400 opacity-60 z-10"
-        style={{ left: `${pct(new Date())}%` }}
-      />
-    );
-  }
+  const todayPct = pct(new Date());
 
   return (
     <div className="card overflow-x-auto">
       <div style={{ minWidth: '700px' }}>
         {/* Month headers */}
-        <div className="flex border-b border-gray-200 bg-gray-50 sticky top-0 z-20">
-          <div className="w-56 shrink-0 px-4 py-2 text-xs font-medium text-gray-500 border-r border-gray-200">Key Task</div>
+        <div className="flex border-b border-gray-200 bg-gray-50">
+          <div className="w-56 shrink-0 px-4 py-2 text-xs font-medium text-gray-500 border-r border-gray-200">
+            Key Task
+          </div>
           <div className="flex-1 flex">
             {months.map((m) => (
               <div
@@ -103,51 +93,43 @@ export default function GanttChart({ milestones, phases = [] }) {
           </div>
         </div>
 
-        {phaseGroups.map(({ phase, items }) => {
-          const colors = PHASE_COLORS[phase] || { bar: '#f3f4f6', border: '#9ca3af', text: '#6b7280' };
-          const phaseRecord = phaseByName[phase];
+        {/* Phase groups */}
+        {phaseGroups.map(({ name: phaseName, items }) => {
+          const colors = PHASE_COLORS[phaseName] || DEFAULT_COLORS;
+          const phaseRecord = phaseByName[phaseName];
           const hasSpan = phaseRecord?.start_date && phaseRecord?.end_date;
+          const spanStartPct = hasSpan ? pct(parseISO(phaseRecord.start_date)) : 0;
+          const spanWidthPct = hasSpan ? Math.max(0.5, pct(parseISO(phaseRecord.end_date)) - spanStartPct) : 0;
 
           return (
-            <div key={phase}>
-              {/* Phase header row */}
+            <div key={phaseName}>
+              {/* Phase header */}
               <div className="flex items-center border-b border-gray-200" style={{ height: '36px', backgroundColor: colors.bar }}>
                 <div
-                  className="w-56 shrink-0 px-4 text-xs font-semibold border-r border-gray-200 truncate flex items-center gap-2"
+                  className="w-56 shrink-0 px-4 text-xs font-semibold border-r border-gray-200 truncate"
                   style={{ color: colors.text, borderLeftColor: colors.border, borderLeftWidth: '3px' }}
                 >
-                  {phase}
+                  {phaseName}
                 </div>
-                <div className="flex-1 relative h-full">
-                  <MonthGridLines />
-                  <TodayLine />
-
+                <div className="flex-1 relative h-full overflow-hidden">
+                  {/* Grid lines */}
+                  {months.map((mon) => (
+                    <div key={mon.toISOString()} className="absolute top-0 bottom-0 border-r border-gray-100" style={{ left: `${pct(endOfMonth(mon))}%` }} />
+                  ))}
+                  {/* Today line */}
+                  <div className="absolute top-0 bottom-0 w-px bg-red-400 opacity-60 z-10" style={{ left: `${todayPct}%` }} />
                   {/* Phase span bar */}
-                  {hasSpan && (() => {
-                    const spanStart = parseISO(phaseRecord.start_date);
-                    const spanEnd = parseISO(phaseRecord.end_date);
-                    const left = pct(spanStart);
-                    const width = Math.max(0.5, pct(spanEnd) - left);
-                    return (
-                      <div
-                        className="absolute top-1/2 -translate-y-1/2 rounded z-10 flex items-center px-2"
-                        style={{
-                          left: `${left}%`,
-                          width: `${width}%`,
-                          height: '18px',
-                          backgroundColor: colors.border,
-                          opacity: 0.35,
-                        }}
-                        title={`${phase}: ${format(spanStart, 'MMM d')} – ${format(spanEnd, 'MMM d, yyyy')}`}
-                      />
-                    );
-                  })()}
-
-                  {/* Phase date label */}
-                  {phaseRecord?.start_date && phaseRecord?.end_date && (
+                  {hasSpan && (
+                    <div
+                      className="absolute top-1/2 -translate-y-1/2 rounded z-10"
+                      style={{ left: `${spanStartPct}%`, width: `${spanWidthPct}%`, height: '18px', backgroundColor: colors.border, opacity: 0.35 }}
+                      title={`${phaseName}: ${format(parseISO(phaseRecord.start_date), 'MMM d')} – ${format(parseISO(phaseRecord.end_date), 'MMM d, yyyy')}`}
+                    />
+                  )}
+                  {hasSpan && (
                     <div
                       className="absolute top-1/2 -translate-y-1/2 text-xs font-medium z-20 whitespace-nowrap"
-                      style={{ left: `${pct(parseISO(phaseRecord.start_date))}%`, color: colors.text, paddingLeft: '4px' }}
+                      style={{ left: `${spanStartPct}%`, color: colors.text, paddingLeft: '4px' }}
                     >
                       {format(parseISO(phaseRecord.start_date), 'MMM d')} – {format(parseISO(phaseRecord.end_date), 'MMM d, yyyy')}
                     </div>
@@ -155,51 +137,43 @@ export default function GanttChart({ milestones, phases = [] }) {
                 </div>
               </div>
 
-              {/* Milestone rows */}
+              {/* Key task rows */}
               {items.map((m) => {
                 const date = parseISO(m.due_date);
-                const left = pct(date);
-                const color = STATUS_COLORS[m.status] || STATUS_COLORS.pending;
+                const leftPct = pct(date);
+                const dotColor = STATUS_COLORS[m.status] || STATUS_COLORS.pending;
 
                 return (
                   <div key={m.id} className="flex items-center hover:bg-gray-50 border-b border-gray-100" style={{ height: '44px' }}>
                     <div className="w-56 shrink-0 px-4 pl-7 border-r border-gray-200">
                       <div className="text-sm font-medium text-gray-800 truncate">{m.name}</div>
                     </div>
-                    <div className="flex-1 relative h-full">
-                      <MonthGridLines />
-                      <TodayLine />
-
-                      {/* Phase span background for context */}
-                      {hasSpan && (() => {
-                        const spanStart = parseISO(phaseRecord.start_date);
-                        const spanEnd = parseISO(phaseRecord.end_date);
-                        return (
-                          <div
-                            className="absolute top-0 bottom-0 z-0"
-                            style={{
-                              left: `${pct(spanStart)}%`,
-                              width: `${Math.max(0.5, pct(spanEnd) - pct(spanStart))}%`,
-                              backgroundColor: colors.bar,
-                              opacity: 0.5,
-                            }}
-                          />
-                        );
-                      })()}
-
-                      {/* Diamond marker */}
+                    <div className="flex-1 relative h-full overflow-hidden">
+                      {/* Grid lines */}
+                      {months.map((mon) => (
+                        <div key={mon.toISOString()} className="absolute top-0 bottom-0 border-r border-gray-100" style={{ left: `${pct(endOfMonth(mon))}%` }} />
+                      ))}
+                      {/* Today line */}
+                      <div className="absolute top-0 bottom-0 w-px bg-red-400 opacity-60 z-10" style={{ left: `${todayPct}%` }} />
+                      {/* Phase background */}
+                      {hasSpan && (
+                        <div
+                          className="absolute top-0 bottom-0 z-0"
+                          style={{ left: `${spanStartPct}%`, width: `${spanWidthPct}%`, backgroundColor: colors.bar, opacity: 0.5 }}
+                        />
+                      )}
+                      {/* Diamond */}
                       <div
                         className="absolute top-1/2 z-20"
-                        style={{ left: `${left}%`, transform: 'translate(-50%, -50%)' }}
+                        style={{ left: `${leftPct}%`, transform: 'translate(-50%, -50%)' }}
                         title={`${m.name} — due ${format(date, 'MMM d, yyyy')}`}
                       >
-                        <div style={{ width: '14px', height: '14px', backgroundColor: color, transform: 'rotate(45deg)', borderRadius: '2px' }} />
+                        <div style={{ width: '14px', height: '14px', backgroundColor: dotColor, transform: 'rotate(45deg)', borderRadius: '2px' }} />
                       </div>
-
                       {/* Date label */}
                       <div
                         className="absolute top-1/2 z-20 text-xs text-gray-500 whitespace-nowrap"
-                        style={{ left: `calc(${left}% + 12px)`, transform: 'translateY(-50%)' }}
+                        style={{ left: `calc(${leftPct}% + 12px)`, transform: 'translateY(-50%)' }}
                       >
                         {format(date, 'MMM d')}
                       </div>
