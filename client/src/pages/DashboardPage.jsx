@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../lib/api';
 import { PROJECT_STATUSES, MILESTONE_STATUSES, statusColor } from '../lib/constants';
-import { FolderKanban, CheckCircle2, Clock, AlertCircle, Calendar, Flag, ChevronRight, Pencil } from 'lucide-react';
+import { FolderKanban, CheckCircle2, Clock, AlertCircle, Calendar, Flag, ChevronRight, Pencil, Hammer } from 'lucide-react';
 import { format, parseISO, isAfter, isBefore, addDays, isToday, isPast } from 'date-fns';
 
 function StatCard({ label, value, icon: Icon, color }) {
@@ -76,7 +76,7 @@ export default function DashboardPage() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             <StatCard label="Total Projects" value={projects.length} icon={FolderKanban} color="bg-brand-600" />
             <StatCard label="Pre-Development" value={countByStatus('pre_development')} icon={Pencil} color="bg-purple-500" />
-            <StatCard label="Under Construction" value={countByStatus('under_construction')} icon={AlertCircle} color="bg-yellow-500" />
+            <StatCard label="Under Construction" value={countByStatus('under_construction')} icon={Hammer} color="bg-yellow-500" />
             <StatCard label="Stabilization" value={countByStatus('stabilization')} icon={CheckCircle2} color="bg-blue-500" />
           </div>
 
