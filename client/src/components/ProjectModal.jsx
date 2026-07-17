@@ -7,7 +7,7 @@ export default function ProjectModal({ project, onClose, onSaved }) {
   const [form, setForm] = useState({
     name: project?.name || '',
     description: project?.description || '',
-    status: project?.status || 'pre_development',
+    status: project?.status || 'in_progress',
     start_date: project?.start_date || '',
     end_date: project?.end_date || '',
   });

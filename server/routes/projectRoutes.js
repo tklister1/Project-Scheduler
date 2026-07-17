@@ -54,7 +54,7 @@ router.post('/', requireAuth, requireAdmin, (req, res) => {
   const result = db.prepare(`
     INSERT INTO projects (name, description, status, start_date, end_date, created_by)
     VALUES (?, ?, ?, ?, ?, ?)
-  `).run(name, description || null, status || 'pre_development', start_date || null, end_date || null, req.user.id);
+  `).run(name, description || null, status || 'in_progress', start_date || null, end_date || null, req.user.id);
 
   const projectId = result.lastInsertRowid;
 
