@@ -146,7 +146,19 @@ export default function DashboardPage() {
             <div className="xl:col-span-2">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Active Projects</h2>
               <div className="grid gap-4 grid-cols-1">
-                {projects.filter((p) => p.status !== 'stabilized').map((p) => {
+                {projects
+                  .filter((p) => p.status !== 'stabilized')
+                  .sort((a, b) => {
+                    const statusOrder = { pre_development: 0, under_construction: 1, stabilization: 2 };
+                    const sa = statusOrder[a.status] ?? 99;
+                    const sb = statusOrder[b.status] ?? 99;
+                    if (sa !== sb) return sa - sb;
+                    if (!a.start_date && !b.start_date) return 0;
+                    if (!a.start_date) return 1;
+                    if (!b.start_date) return -1;
+                    return a.start_date < b.start_date ? -1 : 1;
+                  })
+                  .map((p) => {
                   const statusCls = statusColor(PROJECT_STATUSES, p.status);
                   return (
                     <Link key={p.id} to={`/projects/${p.id}`} className="card px-5 py-4 hover:shadow-md transition-shadow group flex items-center justify-between">
