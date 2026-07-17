@@ -2,7 +2,12 @@ const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
 
 console.log('DATABASE_URL present:', !!process.env.DATABASE_URL);
-console.log('DATABASE_URL starts with:', process.env.DATABASE_URL?.slice(0, 20));
+console.log('DATABASE_URL value:', process.env.DATABASE_URL ? process.env.DATABASE_URL.replace(/:([^:@]+)@/, ':***@') : 'NOT SET');
+
+if (!process.env.DATABASE_URL) {
+  console.error('FATAL: DATABASE_URL is not set. Cannot connect to PostgreSQL.');
+  process.exit(1);
+}
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
