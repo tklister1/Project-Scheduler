@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const db = require('./db');
+const { query } = require('./db');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-in-production';
 
@@ -13,12 +13,9 @@ function signToken(user) {
 
 function requireAuth(req, res, next) {
   const header = req.headers.authorization;
-  if (!header || !header.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
+  if (!header || !header.startsWith('Bearer ')) return res.status(401).json({ error: 'Unauthorized' });
   try {
-    const payload = jwt.verify(header.slice(7), JWT_SECRET);
-    req.user = payload;
+    req.user = jwt.verify(header.slice(7), JWT_SECRET);
     next();
   } catch {
     res.status(401).json({ error: 'Invalid token' });
@@ -26,29 +23,24 @@ function requireAuth(req, res, next) {
 }
 
 function requireAdmin(req, res, next) {
-  if (!req.user?.is_global_admin) {
-    return res.status(403).json({ error: 'Forbidden' });
-  }
+  if (!req.user?.is_global_admin) return res.status(403).json({ error: 'Forbidden' });
   next();
 }
 
 function requireProjectAccess(minRole) {
-  return (req, res, next) => {
+  return async (req, res, next) => {
     const projectId = parseInt(req.params.projectId || req.params.id);
     if (req.user.is_global_admin) return next();
-
-    const access = db.prepare(
-      'SELECT role FROM project_access WHERE project_id = ? AND user_id = ?'
-    ).get(projectId, req.user.id);
-
-    if (!access) return res.status(403).json({ error: 'No access to this project' });
-
-    const roles = ['viewer', 'admin'];
-    if (roles.indexOf(access.role) < roles.indexOf(minRole)) {
-      return res.status(403).json({ error: 'Insufficient permissions' });
+    try {
+      const { rows } = await query('SELECT role FROM project_access WHERE project_id = $1 AND user_id = $2', [projectId, req.user.id]);
+      if (!rows[0]) return res.status(403).json({ error: 'No access to this project' });
+      const roles = ['viewer', 'admin'];
+      if (roles.indexOf(rows[0].role) < roles.indexOf(minRole)) return res.status(403).json({ error: 'Insufficient permissions' });
+      req.projectRole = rows[0].role;
+      next();
+    } catch (err) {
+      res.status(500).json({ error: err.message });
     }
-    req.projectRole = access.role;
-    next();
   };
 }
 
