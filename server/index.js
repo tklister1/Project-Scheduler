@@ -18,12 +18,10 @@ app.use('/api/projects', require('./routes/projectRoutes'));
 app.use('/api/projects/:projectId/milestones', require('./routes/milestoneRoutes'));
 app.use('/api/dashboard', require('./routes/dashboardRoutes'));
 
-// Serve React build in production
-if (process.env.NODE_ENV === 'production') {
-  const buildPath = path.join(__dirname, '..', 'client', 'dist');
-  app.use(express.static(buildPath));
-  app.get('*', (req, res) => res.sendFile(path.join(buildPath, 'index.html')));
-}
+// Serve React build
+const buildPath = path.join(__dirname, '..', 'client', 'dist');
+app.use(express.static(buildPath));
+app.get('*', (req, res) => res.sendFile(path.join(buildPath, 'index.html')));
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
