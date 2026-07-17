@@ -8,12 +8,10 @@ export const PHASES = [
   { value: 'Entitlements & Permitting', color: 'bg-violet-100 text-violet-700' },
   { value: 'Design & Engineering', color: 'bg-sky-100 text-sky-700' },
   { value: 'Construction', color: 'bg-amber-100 text-amber-700' },
-  { value: 'general', color: 'bg-gray-100 text-gray-600' },
-  { value: 'inspection', color: 'bg-gray-100 text-gray-600' },
-  { value: 'financing', color: 'bg-gray-100 text-gray-600' },
-  { value: 'marketing', color: 'bg-gray-100 text-gray-600' },
-  { value: 'legal', color: 'bg-gray-100 text-gray-600' },
-  { value: 'closing', color: 'bg-gray-100 text-gray-600' },
+  { value: 'Financing', color: 'bg-gray-100 text-gray-600' },
+  { value: 'Marketing', color: 'bg-gray-100 text-gray-600' },
+  { value: 'Legal', color: 'bg-gray-100 text-gray-600' },
+  { value: 'Closing', color: 'bg-gray-100 text-gray-600' },
 ];
 
 // Values for select dropdowns
