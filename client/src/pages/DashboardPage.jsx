@@ -24,8 +24,8 @@ function DateBadge({ date }) {
   const today = new Date();
   if (isToday(d)) return <span className="badge bg-yellow-100 text-yellow-700">Today</span>;
   if (isPast(d)) return <span className="badge bg-red-100 text-red-600">Overdue</span>;
-  if (isBefore(d, addDays(today, 7))) return <span className="badge bg-orange-100 text-orange-700">This week</span>;
-  if (isBefore(d, addDays(today, 30))) return <span className="badge bg-blue-100 text-blue-700">This month</span>;
+  if (isBefore(d, addDays(today, 7))) return <span className="badge bg-orange-100 text-orange-700">Next 7 Days</span>;
+  if (isBefore(d, addDays(today, 30))) return <span className="badge bg-blue-100 text-blue-700">Next 30 Days</span>;
   return null;
 }
 
