@@ -51,9 +51,9 @@ export default function DashboardPage() {
     }).finally(() => setLoading(false));
   }, []);
 
-  const active = projects.filter((p) => p.status !== 'stabilized').length;
   const totalMilestones = projects.reduce((s, p) => s + (p.milestone_count || 0), 0);
   const completedMilestones = projects.reduce((s, p) => s + (p.completed_milestones || 0), 0);
+  const countByStatus = (status) => projects.filter((p) => p.status === status).length;
 
   // Split upcoming vs past
   const today = new Date();
@@ -75,9 +75,9 @@ export default function DashboardPage() {
           {/* Stats */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             <StatCard label="Total Projects" value={projects.length} icon={FolderKanban} color="bg-brand-600" />
-            <StatCard label="Active Projects" value={active} icon={Clock} color="bg-green-500" />
-            <StatCard label="Total Key Dates" value={totalMilestones} icon={AlertCircle} color="bg-purple-500" />
-            <StatCard label="Completed" value={completedMilestones} icon={CheckCircle2} color="bg-emerald-500" />
+            <StatCard label="Pre-Development" value={countByStatus('pre_development')} icon={Clock} color="bg-purple-500" />
+            <StatCard label="Under Construction" value={countByStatus('under_construction')} icon={AlertCircle} color="bg-yellow-500" />
+            <StatCard label="Stabilization" value={countByStatus('stabilization')} icon={CheckCircle2} color="bg-blue-500" />
           </div>
 
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
