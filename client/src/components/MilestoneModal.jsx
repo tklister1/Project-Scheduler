@@ -56,7 +56,7 @@ export default function MilestoneModal({ projectId, milestone, onClose, onSaved 
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Phase</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
               <select className="input" value={form.category} onChange={(e) => set('category', e.target.value)}>
                 {MILESTONE_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
