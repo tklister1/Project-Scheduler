@@ -6,8 +6,6 @@ const STATUS_COLORS = {
   pending: '#9ca3af',
   in_progress: '#0ea5e9',
   complete: '#22c55e',
-  blocked: '#f87171',
-  cancelled: '#d1d5db',
 };
 
 const PHASE_COLORS = {
