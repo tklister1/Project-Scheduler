@@ -58,15 +58,9 @@ export default function ProjectModal({ project, onClose, onSaved }) {
               {PROJECT_STATUSES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
             </select>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-              <input type="date" className="input" value={form.start_date} onChange={(e) => set('start_date', e.target.value)} />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-              <input type="date" className="input" value={form.end_date} onChange={(e) => set('end_date', e.target.value)} />
-            </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+            <input type="date" className="input" value={form.start_date} onChange={(e) => set('start_date', e.target.value)} />
           </div>
 
           <div className="flex gap-3 pt-2">
