@@ -23,7 +23,7 @@ export function phaseColor(phase) {
   return PHASES.find((p) => p.value === phase)?.color || 'bg-gray-100 text-gray-600';
 }
 
-export const PROJECT_TYPES = ['Multi-Family', 'LIHTC', 'Single-Family', 'Retail', 'Mixed-Use'];
+export const PROJECT_TYPES = ['Multi-Family', 'LIHTC', 'Single-Family', 'Retail', 'Mixed-Use', 'Owners Rep'];
 
 export const PROJECT_STATUSES = [
   { value: 'pre_development', label: 'Pre-Development', color: 'bg-purple-100 text-purple-700' },
