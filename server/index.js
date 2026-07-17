@@ -16,6 +16,7 @@ app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/projects', require('./routes/projectRoutes'));
 app.use('/api/projects/:projectId/milestones', require('./routes/milestoneRoutes'));
+app.use('/api/dashboard', require('./routes/dashboardRoutes'));
 
 // Serve React build in production
 if (process.env.NODE_ENV === 'production') {
