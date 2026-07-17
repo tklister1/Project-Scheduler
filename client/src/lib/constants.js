@@ -28,8 +28,10 @@ export function phaseColor(phase) {
 }
 
 export const PROJECT_STATUSES = [
-  { value: 'in_progress', label: 'In Progress', color: 'bg-yellow-100 text-yellow-700' },
-  { value: 'completed', label: 'Completed', color: 'bg-green-100 text-green-700' },
+  { value: 'pre_development', label: 'Pre-Development', color: 'bg-purple-100 text-purple-700' },
+  { value: 'under_construction', label: 'Under Construction', color: 'bg-yellow-100 text-yellow-700' },
+  { value: 'stabilization', label: 'Stabilization', color: 'bg-blue-100 text-blue-700' },
+  { value: 'stabilized', label: 'Stabilized', color: 'bg-green-100 text-green-700' },
 ];
 
 export function statusColor(statuses, value) {
